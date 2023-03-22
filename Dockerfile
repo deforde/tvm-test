@@ -9,6 +9,7 @@ RUN apt update && apt install -y \
     git \
     python3 \
     python3-pip \
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install \
@@ -28,12 +29,13 @@ RUN python3 -m pip install \
     tornado==6.1 \
     typing-extensions
 
-RUN adduser --disabled-password --uid 1000 --gecos "" mruser
-USER mruser
+RUN adduser --disabled-password --uid 1000 --gecos "" jenkins
+USER jenkins
+# RUN mkdir /home/jenkins
 
-WORKDIR /home/mruser
+WORKDIR /home/jenkins
 RUN git clone --recursive https://github.com/apache/tvm
-ENV TVM_INCLUDE_PATH=/home/mruser/tvm
-ENV C_INCLUDE_PATH=/home/mruser/tvm/3rdparty/dlpack/include:$C_INCLUDE_PATH
-ENV CPLUS_INCLUDE_PATH=/home/mruser/tvm/3rdparty/dlpack/include:$CPLUS_INCLUDE_PATH
+ENV TVM_INCLUDE_PATH=/home/jenkins/tvm
+ENV C_INCLUDE_PATH=/home/jenkins/tvm/3rdparty/dlpack/include:$C_INCLUDE_PATH
+ENV CPLUS_INCLUDE_PATH=/home/jenkins/tvm/3rdparty/dlpack/include:$CPLUS_INCLUDE_PATH
 ENV CC=/usr/bin/gcc
