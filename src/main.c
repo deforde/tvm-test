@@ -6,20 +6,23 @@
 
 #include "tvmgen_default.h"
 
+#define MEM_BUF_SZ 2048
 #define NSAMPLES 100
 
 int main(void) {
-    size_t membuf_sz = 2ull * 1024 * 1024;
-    uint8_t *membuf = malloc(membuf_sz);
+    uint8_t membuf[MEM_BUF_SZ];
     tvm_workspace_t workspace = {0};
 
-    StackMemoryManager_Init(&workspace, membuf, membuf_sz);
+    StackMemoryManager_Init(&workspace, membuf, MEM_BUF_SZ);
 
+    int8_t output_buf = 0;
     struct tvmgen_default_outputs outputs = {
-        .StatefulPartitionedCall_0 = malloc(2048),
+        .StatefulPartitionedCall_0 = &output_buf,
     };
+
+    int8_t input_buf = 0;
     struct tvmgen_default_inputs inputs = {
-        .serving_default_dense_2_input_0 = malloc(2048),
+        .serving_default_dense_2_input_0 = &input_buf,
     };
 
     FILE *f = fopen("plt.py", "w");
@@ -27,9 +30,9 @@ int main(void) {
 
     fprintf(f, "y = [");
     for (int i = 0; i < NSAMPLES; i++) {
-        *(int8_t*)inputs.serving_default_dense_2_input_0 = i * (INT8_MAX - INT8_MIN) / NSAMPLES + INT8_MIN;
+        input_buf = i * (INT8_MAX - INT8_MIN) / NSAMPLES + INT8_MIN;
         tvmgen_default_run(&inputs, &outputs);
-        fprintf(f, "%i,", *(int8_t*)outputs.StatefulPartitionedCall_0);
+        fprintf(f, "%i,", output_buf);
     }
     fprintf(f, "]\n");
 
