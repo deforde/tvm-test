@@ -44,7 +44,7 @@ $(BUILD_DIR)/%.c.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: clean compdb
+.PHONY: clean compdb run
 
 clean:
 	@rm -rf $(addprefix $(BUILD_DIR)/,$(filter-out compile_commands.json,$(shell ls $(BUILD_DIR))))
@@ -52,5 +52,9 @@ clean:
 compdb: clean
 	@bear -- $(MAKE) san
 	@mv compile_commands.json build
+
+run: all
+	./$(TARGET)
+	./pyrun.sh
 
 -include $(DEPS)
