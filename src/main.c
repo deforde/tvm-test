@@ -46,5 +46,7 @@ int main(void) {
     fprintf(f, "plt.plot(g)\n");
     fprintf(f, "plt.show()\n");
 
+    fclose(f);
+
     return 0;
 }
